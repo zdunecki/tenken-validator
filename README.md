@@ -51,6 +51,7 @@ example.on('rules',[{length:"5-20",lengthError:"Invalid length"},{type:"email",t
 ```
 
 ##Example
+### via HTML
 ```html
 <form id="form1">
  <input type="text" data-tenken-length="5-20" data-tenken-length-error="Error! Min. length is 5 and max 20."/>
@@ -69,4 +70,25 @@ example.on('submit',function(event,instance){
  if(!valid)
   event.preventDefault(); // stop submitting form
 });
+```
+### via JS
+```html
+<form id="form1">
+ <input type="text"/>
+ <button type="submit">Send</button>
+</form>
+```
+```javascript
+var example = document.getElementById("form1").tenken();
+var rules = [length:"5-20",lengthError:"Error! Min. length is 5 and max 20."];
+example.on('rules',rules).on('submit',function(event,instance){
+
+ var valid = instance.isValid(function(valid){
+ // some stuff with valid array of objects
+ },function(invalid){
+ // some stuff with invalid array of objects
+ })
+ if(!valid)
+  event.preventDefault(); // stop submitting form
+});)
 ```
