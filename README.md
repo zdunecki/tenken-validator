@@ -49,7 +49,16 @@ Simple demo:
 example.on('rules',[{length:"5-20",lengthError:"Invalid length"},{type:"email",typeError:"wrong email"}])
 .on('submit',onSubmit);
 ```
-
+### exceptions
+Exception is **mixin** property. Mixins allows custom validation logic, for example:
+```javascript
+var mixin = function(value){
+ var foo = document.getElementById('foo').value;
+ return value > foo + 5; 
+}
+example.on('rules',[mixin:mixin,mixinError:'Value for this input must be 5 greater than foo value.'])
+.on('submit',onSubmit);
+```
 ##Example
 ### via HTML
 ```html
