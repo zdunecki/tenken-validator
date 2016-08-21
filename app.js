@@ -84,7 +84,10 @@ Object.prototype.tenken = function(){
     }
   }
 
-  function initializer(){
+  function initializer(newElements){
+      if(newElements)
+        $tenkenElements = newElements;
+
       for(var v = 0; v < $tenkenElements.length; v++){
         $tenkenAttr2.filter(function(element,index,array){
           if($tenkenElements[v].hasAttribute(element)){
@@ -112,8 +115,27 @@ Object.prototype.tenken = function(){
               })
              })
             break;
+          case 'rules':
+            var valitaionEl = self.querySelectorAll('input','textarea');
+            instance.map(function(value,key){
+              var keyNames = Object.keys(value);
+              for (var i in keyNames) {
+
+                  if(typeof keyNames[i]  === 'function')
+                    return
+
+                  var attr = keyNames[i];
+                  var el = valitaionEl[key];
+                  var val = value[attr];
+                  var splitUppers = attr.match(/[A-Z]*[^A-Z]+/g);
+                  splitUppers[1] === "Error" ?   el.setAttribute("data-tenken-"+splitUppers.join("-"),val) : el.setAttribute("data-tenken-"+attr,val);
+
+              }
+            });
+            initializer(self.querySelectorAll($tenkenAttr.join(",")));
+          break;
           default: 
-             'Wrong events'
+             return 'Wrong props';
       }
       return this;
     }
