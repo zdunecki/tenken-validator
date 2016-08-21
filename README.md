@@ -13,7 +13,9 @@ example.on('submit',function(event,instance){
  //event - submit events
  //instance - tenken instance for validation.
 });
+example.on('rules', @array of objects for rules); // make some rules with javascript
 ```
+
 ### Tenken instance
 #### Methods
 
@@ -25,6 +27,7 @@ example.on('submit',function(event,instance){
     * input - DOM element for correct validation 
     * valid - return **false**
     * message - return error message for each invalid validation
+    
 
 ### Tenken HTML attributes
 #### validation attributes
@@ -37,6 +40,15 @@ example.on('submit',function(event,instance){
 Pass some error message on invalid response.
 
 Invalid attributes are making by validation attributes and with **"-error"** ties like **data-tenken-length-error**.
+
+### Tenken JS rules
+#### build:
+JS rules are building like html attributes but without "data-tenken" string. **Note:** to create validation error message props use **{namespace}Error** syntax. 
+Simple demo:
+```javascript
+example.on('rules',[{length:"5-20",lengthError:"Invalid length"},{type:"email",typeError:"wrong email"}])
+.on('submit',onSubmit);
+```
 
 ##Example
 ```html
