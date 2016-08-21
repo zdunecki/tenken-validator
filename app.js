@@ -1,7 +1,7 @@
 Object.prototype.tenken = function(){
   var self = this;
-  var $tenkenAttr = ['[data-tenken-length]','[data-tenken-required]','[data-tenken-regex]','[data-tenken-type]'];
-  var $tenkenAttr2 = ['data-tenken-length','data-tenken-required','data-tenken-regex','data-tenken-type'];
+  var $tenkenAttr = ['[data-tenken-length]','[data-tenken-required]','[data-tenken-regex]','[data-tenken-type]','[data-tenken-mixin]'];
+  var $tenkenAttr2 = ['data-tenken-length','data-tenken-required','data-tenken-regex','data-tenken-type','data-tenken-mixin'];
   var $tenkenElements = self.querySelectorAll($tenkenAttr.join(","));
 
   var $regex = {
@@ -12,11 +12,11 @@ Object.prototype.tenken = function(){
     elements:[],
     length:function(obligation,el){
       var result;
-      var min = parseInt(obligation.split("-")[0]);
+    	var min = parseInt(obligation.split("-")[0]);
       var max = parseInt(obligation.split("-")[1]);
       var trim = el.value.trim();
       trim.length > max || trim.length+1 <= min ? result = false : result = true;
-      return result;
+    	return result;
     },
     required:function(obligation,el){
       var result;
@@ -42,19 +42,24 @@ Object.prototype.tenken = function(){
       testing ? result = true : result = false;
       return result;
     },
-    checkValid:function(type,obligation,el){
-      switch(type){
-        case 'tenkenlength':
-          return this.length(obligation,el);
+    mixin:function(mixin,el){
+      return mixin(el.value);
+    },
+    checkValid:function(type,obligation,el,mixin){
+    	switch(type){
+      	case 'tenkenlength':
+        	return this.length(obligation,el);
         break;
         case 'tenkenrequired':
-          return this.required(obligation,el);
+        	return this.required(obligation,el);
         break;
         case 'tenkenregex':
-          return this.regex(obligation,el);
+        	return this.regex(obligation,el);
         break;
         case 'tenkentype':
           return this.type(obligation,el);
+        case 'tenkenmixin':
+          return this.mixin(mixin,el);
         break;
         default: 'Wrong types';
       }
@@ -68,7 +73,7 @@ Object.prototype.tenken = function(){
       var successForms = [];
       var errorForms = [];
       validator.elements.map(function(value,key){
-        var isok = validator.checkValid(value.type,value.obligation,value.element);
+        var isok = validator.checkValid(value.type,value.obligation,value.element,value.mixin);
         okArr.push(isok);
         isok ? successForms.push({input:value.element,valid:true}) : errorForms.push({input:value.element,message:value.error,valid:false})
       });
@@ -89,12 +94,12 @@ Object.prototype.tenken = function(){
         $tenkenElements = newElements;
 
       for(var v = 0; v < $tenkenElements.length; v++){
-        $tenkenAttr2.filter(function(element,index,array){
+       	$tenkenAttr2.filter(function(element,index,array){
           if($tenkenElements[v].hasAttribute(element)){
             var type = element.split('-').slice(1,element.length).join('');
             var obligation = $tenkenElements[v].getAttribute(element);
-            var error =  $tenkenElements[v].getAttribute(element+"-error"); 
-            validator.elements.push({element:$tenkenElements[v],type:type,obligation:obligation,attr:element,error:error});
+  					var error =  $tenkenElements[v].getAttribute(element+"-error"); 
+            validator.elements.push({element:$tenkenElements[v],type:type,obligation:obligation,attr:element,error:error,mixin:null});
           }
         });
       }
@@ -119,6 +124,12 @@ Object.prototype.tenken = function(){
             var valitaionEl = self.querySelectorAll('input','textarea');
             instance.map(function(value,key){
               var keyNames = Object.keys(value);
+
+              setTimeout(function(){
+                if(value.hasOwnProperty("mixin"))
+                  validator.elements[key]['mixin'] = value.mixin;
+              })
+
               for (var i in keyNames) {
 
                   if(typeof keyNames[i]  === 'function')
@@ -128,9 +139,11 @@ Object.prototype.tenken = function(){
                   var el = valitaionEl[key];
                   var val = value[attr];
                   var splitUppers = attr.match(/[A-Z]*[^A-Z]+/g);
-                  splitUppers[1] === "Error" ?   el.setAttribute("data-tenken-"+splitUppers.join("-"),val) : el.setAttribute("data-tenken-"+attr,val);
+
+                  splitUppers[1] === "Error" ? el.setAttribute("data-tenken-"+splitUppers.join("-"),val) : attr != "mixin" ? el.setAttribute("data-tenken-"+attr,val) : el.setAttribute("data-tenken-"+attr,'');
 
               }
+
             });
             initializer(self.querySelectorAll($tenkenAttr.join(",")));
           break;
