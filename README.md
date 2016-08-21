@@ -28,6 +28,8 @@ example.on('submit',function(event,instance){
 
 ### Tenken HTML attributes
 #### validation attributes
+* **data-tenken-type** - pass one of tenken types:
+ * email
 * **data-tenken-length** - pass range like "5-20"
 * **data-tenken-regex** - pass regex like "^[A-Z][-a-zA-Z]+$"
 
